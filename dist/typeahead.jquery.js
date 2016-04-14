@@ -1,7 +1,7 @@
 /*!
  * typeahead.js 0.11.1
  * https://github.com/twitter/typeahead.js
- * Copyright 2013-2015 Twitter, Inc. and other contributors; Licensed MIT
+ * Copyright 2013-2016 Twitter, Inc. and other contributors; Licensed MIT
  */
 
 (function(root, factory) {
@@ -790,7 +790,6 @@
                     that.async && that.trigger("asyncCanceled", query);
                 };
                 this.source(query, sync, async);
-                !syncCalled && sync([]);
                 function sync(suggestions) {
                     if (syncCalled) {
                         return;
@@ -807,7 +806,11 @@
                     suggestions = suggestions || [];
                     if (!canceled && rendered < that.limit) {
                         that.cancel = $.noop;
-                        that._append(query, suggestions.slice(0, that.limit - rendered));
+                        if (syncCalled) {
+                            that._append(query, suggestions.slice(0, that.limit - rendered));
+                        } else {
+                            that._overwrite(query, suggestions.slice(0, that.limit - rendered));
+                        }
                         rendered += suggestions.length;
                         that.async && that.trigger("asyncReceived", query);
                     }
@@ -1125,7 +1128,7 @@
             },
             _onEnterKeyed: function onEnterKeyed(type, $e) {
                 var $selectable;
-                if ($selectable = this.menu.getActiveSelectable()) {
+                if ($selectable = this.menu.getActiveSelectable() || this.menu.getTopSelectable()) {
                     this.select($selectable) && $e.preventDefault();
                 }
             },

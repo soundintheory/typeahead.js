@@ -159,11 +159,11 @@ var Typeahead = (function() {
     },
 
     _onEnterKeyed: function onEnterKeyed(type, $e) {
-      var $selectable;
+        var $selectable;
 
-      if ($selectable = this.menu.getActiveSelectable()) {
-        this.select($selectable) && $e.preventDefault();
-      }
+        if ($selectable = this.menu.getActiveSelectable() || this.menu.getTopSelectable()) {
+            this.select($selectable) && $e.preventDefault();
+        }
     },
 
     _onTabKeyed: function onTabKeyed(type, $e) {
